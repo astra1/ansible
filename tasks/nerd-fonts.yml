@@ -1,0 +1,34 @@
+- name: Ensure local fonts directory
+  ansible.builtin.file:
+    path: ~/.local/share/fonts
+    state: directory
+    mode: "0775"
+  tags: &tags_for_node_tasks ['install', 'fonts']
+
+- name: DejaVu fonts exist
+  ansible.builtin.find:
+    path: ~/.local/share/fonts
+    pattern: 'DejaVuSansMNerdFont*'
+  register: dejavu_exists
+  tags: *tags_for_node_tasks
+
+- name: Obtain latest Nerd Fonts Version
+  when: dejavu_exists.matched == 0
+  register: nerd_version
+  changed_when: false
+  ansible.builtin.shell: >
+    set -o pipefail &&
+    curl -s "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest"
+    | jq .tag_name
+    | tr -d \"
+  args:
+    executable: /bin/bash
+  tags: *tags_for_node_tasks
+
+- name: Download DejaVu font
+  when: dejavu_exists.matched == 0
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: https://github.com/ryanoasis/nerd-fonts/releases/download/{{ nerd_version.stdout }}/DejaVuSansMono.zip
+    dest: ~/.local/share/fonts
+  tags: *tags_for_node_tasks

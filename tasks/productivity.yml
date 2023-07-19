@@ -1,0 +1,53 @@
+- name: Is LinuxMint
+  changed_when: false
+  ansible.builtin.command:
+    lsb_release -is
+  register: is_linuxmint
+
+- name: Get LinuxMint LSB release
+  changed_when: false
+  when: is_linuxmint.stdout == "Linuxmint"
+  ansible.builtin.shell: >
+    set -o pipefail &&
+    cat /etc/upstream-release/lsb-release |
+    grep DISTRIB_CODENAME |
+    tr -d DISTRIB_CODENAME=
+  register: codename
+
+- name: Get Uwuntu LSB release
+  changed_when: false
+  when: is_linuxmint.stdout != "Linuxmint"
+  ansible.builtin.command:
+    lsb_release -cs
+  register: codename
+
+- name: OBS ppa
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:obsproject/obs-studio
+    update_cache: true
+    codename: "{{ codename.stdout }}"
+
+- name: Install APT Packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - tmux
+      - fzf
+      - gimp
+      - flameshot
+      - xclip
+      - ripgrep
+      - tldr
+      - gxkb
+      - redshift-gtk
+      - qbittorrent
+      - fortune
+      - cowsay
+      - peek
+      - ffmpeg
+      - obs-studio
+      - calibre
+  tags:
+    - install
+    - productivity

@@ -1,0 +1,33 @@
+- name: Install NodeJS & NPM
+  become: true
+  ansible.builtin.apt:
+    name: ["nodejs", "npm"]
+  tags: &tags_for_node_tasks ['install', 'node']
+
+- name: Obtain latest NVM version
+  register: nvm_version
+  changed_when: false
+  ansible.builtin.shell: >
+    set -o pipefail &&
+    curl -sL "https://api.github.com/repos/creationix/nvm/releases/latest"
+    | jq .tag_name
+    | tr -d \"
+  args:
+    executable: /bin/bash
+
+- name: Install NVM
+  ansible.builtin.shell: >
+    set -o pipefail &&
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/{{ nvm_version.stdout }}/install.sh
+    | bash
+  args:
+    executable: /bin/bash
+    chdir: "$HOME"
+    creates: "$HOME/.nvm/nvm.sh"
+
+- name: Install Node LTS
+  changed_when: true
+  ansible.builtin.shell:
+    source ~/.nvm/nvm.sh && nvm install --lts
+  args:
+    executable: /bin/bash

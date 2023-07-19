@@ -1,0 +1,12 @@
+- name: Install Angular CLI
+  changed_when: true
+  ansible.builtin.shell:
+    source ~/.nvm/nvm.sh && npm i -g @angular/cli
+  args:
+    executable: /bin/bash
+  tags: &tags_for_node_tasks ['install', 'packages']
+
+- name: Install lolcat
+  ansible.builtin.pip:
+    name: lolcat
+  tags: *tags_for_node_tasks
