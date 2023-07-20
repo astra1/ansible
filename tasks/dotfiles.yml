@@ -1,0 +1,31 @@
+- name: Install STOW
+  become: true
+  ansible.builtin.apt:
+    name:
+      - stow
+  tags: &tags_for_dotfiles ['install', 'dotfiles', 'stow']
+
+- name: Clone dotfiles
+  ansible.builtin.git:
+    repo: git@github.com:astra1/.dotfiles.git
+    dest: ~/.dotfiles
+    recursive: true
+    update: true
+    version: main
+    accept_hostkey: true
+  tags: *tags_for_dotfiles
+
+- name: Remove existing .zshrc
+  ansible.builtin.file:
+    path: ~/.zshrc
+    state: absent
+
+- name: Stow dotfiles
+  changed_when: true
+  ansible.builtin.shell:
+    ./install
+  args:
+    chdir: ~/.dotfiles
+  tags: *tags_for_dotfiles
+
+# TODO: Disable powerbtn /etc/systemd/logind.conf

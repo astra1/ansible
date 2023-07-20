@@ -12,7 +12,7 @@
   register: dejavu_exists
   tags: *tags_for_node_tasks
 
-- name: Obtain latest Nerd Fonts Version
+- name: Get latest Nerd Fonts Version
   when: dejavu_exists.matched == 0
   register: nerd_version
   changed_when: false

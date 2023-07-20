@@ -28,6 +28,34 @@
     update_cache: true
     codename: "{{ codename.stdout }}"
 
+- name: Get LazyGit version
+  register: lazygit_version
+  changed_when: false
+  ansible.builtin.shell: >
+    set -o pipefail &&
+    curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest"
+    | jq .tag_name
+    | tr -d \"
+    | tr -d v
+  args:
+    executable: /bin/bash
+
+- name: Download LazyGit
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: |
+      https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version.stdout }}/lazygit_{{ lazygit_version.stdout }}_Linux_x86_64.tar.gz
+    dest: /tmp
+
+- name: Install LazyGit
+  changed_when: true
+  ansible.builtin.shell:
+    install lazygit /usr/local/bin
+  become: true
+  args:
+    executable: /bin/bash
+    chdir: "/tmp/"
+
 - name: Install APT Packages
   become: true
   ansible.builtin.apt:

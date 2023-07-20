@@ -4,7 +4,7 @@
     name: ["nodejs", "npm"]
   tags: &tags_for_node_tasks ['install', 'node']
 
-- name: Obtain latest NVM version
+- name: Get latest NVM version
   register: nvm_version
   changed_when: false
   ansible.builtin.shell: >

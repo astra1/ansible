@@ -14,11 +14,12 @@ RUN addgroup --gid 1000 astral
 RUN adduser --gecos astral --uid 1000 --gid 1000 --disabled-password astral
 RUN adduser astral sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+ENV PATH="$PATH:/usr/games"
 
 USER astral
 WORKDIR /home/astral
 
 FROM main
-COPY . .
+COPY --chown=astral:astral . .
 CMD ["sh", "-c", "ansible-playbook $TAGS local.yml --become"]
 
