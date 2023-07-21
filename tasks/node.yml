@@ -5,7 +5,6 @@
   tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Get latest NVM version
-  register: nvm_version
   changed_when: false
   ansible.builtin.shell: >
     set -o pipefail &&
@@ -14,6 +13,7 @@
     | tr -d \"
   args:
     executable: /bin/bash
+  register: nvm_version
 
 - name: Install NVM
   ansible.builtin.shell: >

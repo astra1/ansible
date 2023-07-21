@@ -1,0 +1,32 @@
+- name: Get Packer
+  ansible.builtin.git:
+    repo: "https://github.com/wbthomason/packer.nvim"
+    dest: "~/.local/share/nvim/site/pack/packer/start/packer.nvim"
+  tags: &tags_for_nvim ["install", "nvim"]
+
+- name: Add NVIM PPA
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/unstable
+    update_cache: true
+    codename: "{{ lsb_release }}"
+  tags: *tags_for_nvim
+
+- name: Install NVIM
+  become: true
+  ansible.builtin.apt:
+    name:
+      - neovim
+  tags: *tags_for_nvim
+
+- name: Install NVIM plugins
+  changed_when: true
+  ansible.builtin.shell:
+    nvim --headless -c "autocmd User PackerComplete quitall" -c "PackerSync"
+  tags: *tags_for_nvim
+
+- name: Install NVIM Mason deps
+  changed_when: true
+  ansible.builtin.shell:
+    nvim --headless +"MasonInstall eslint_d prettierd" +q
+  tags: *tags_for_nvim

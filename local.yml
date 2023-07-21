@@ -15,10 +15,13 @@
         tasks/ssh.yml
     - name: Git Setup
       ansible.builtin.include_tasks:
-        tasks/git-setup.yml
+        tasks/git.yml
     - name: Core tasks
       ansible.builtin.include_tasks:
-        tasks/core-setup.yml
+        tasks/core.yml
+    - name: LSB Release
+      ansible.builtin.include_tasks:
+        tasks/lsb-release.yml
     - name: Productivity Tools
       ansible.builtin.include_tasks:
         tasks/productivity.yml
@@ -28,7 +31,6 @@
     - name: ZSH
       ansible.builtin.include_tasks:
         tasks/zsh.yml
-    # TODO: Install nvim
     - name: PIP/NPM Packages
       ansible.builtin.include_tasks:
         tasks/packages.yml
@@ -38,3 +40,6 @@
     - name: Dotfiles
       ansible.builtin.include_tasks:
         tasks/dotfiles.yml
+    - name: NVIM
+      ansible.builtin.include_tasks:
+        tasks/nvim.yml
