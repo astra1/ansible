@@ -27,6 +27,9 @@
 
 - name: Install NVIM Mason deps
   changed_when: true
-  ansible.builtin.shell:
-    nvim --headless +"MasonInstall eslint_d prettierd" +q
+  ansible.builtin.shell: >
+    $HOME/.fnm/fnm exec --using=default
+    nvim --headless +"MasonInstall eslint_d prettierd stylua" +q
   tags: *tags_for_nvim
+  args:
+    executable: /bin/bash

@@ -7,10 +7,10 @@
 - name: Get LinuxMint LSB release
   changed_when: false
   when: is_linuxmint.stdout == "Linuxmint"
-  ansible.builtin.shell: >
-    set -o pipefail &&
-    cat /etc/upstream-release/lsb-release |
-    grep DISTRIB_CODENAME |
+  ansible.builtin.shell: |
+    set -o pipefail
+    cat /etc/upstream-release/lsb-release | \
+    grep DISTRIB_CODENAME | \
     tr -d DISTRIB_CODENAME=
   register: codename
 
